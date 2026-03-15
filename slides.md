@@ -339,16 +339,28 @@ class: text-center
 
 ---
 
-# 2D Poisson: Routing Pattern
+# 2D Poisson: Routing Patterns
 
-<img src="./images/poisson_fno_routing.png" class="w-full max-h-80 object-contain rounded-lg border-0" />
+<img src="./images/poisson_routing_comparison.png" class="w-full max-h-72 object-contain rounded-lg border-0" />
 
-<div class="mt-3 text-sm opacity-80 space-y-1">
+<div class="grid grid-cols-2 gap-6 mt-3 text-sm">
+<div class="opacity-80">
 
-- **SOR(1.6)** dominates (~73%) — fastest for high-frequency error early on
-- **SOR(1.3)** used ~26% throughout — better for certain mid-frequency modes
-- **FNO** used sparingly (~0.3%) but delivers a large one-shot correction when selected
+**Oracle Greedy** — the upper bound:
+- Highly adaptive per-sample routing
+- **SOR(1.6)** dominates (~64%), **SOR(1.3)** ~27%, **SOR(1.0)** ~8%
+- FNO used sparingly (~0.5%) for targeted corrections
+- AUC: **8.8 × 10⁻⁴**
 
+</div>
+<div class="opacity-80">
+
+**Learned LSTM Router** — trained to imitate:
+- Captures SOR(1.3) dominance (~57%) and per-sample adaptation
+- Uses FNO at matching rate (0.5%) to the oracle
+- AUC: **0.052** — 7.6× better than best classical, but still 59× gap to oracle
+
+</div>
 </div>
 
 ---
@@ -357,25 +369,17 @@ class: text-center
 
 <div class="mt-4">
 
-| | **Best Classical (SOR 1.3)** | **Greedy + Pre-trained FNO** | **Greedy + Unrolled FNO** |
+| | **Best Classical (SOR 1.3)** | **Greedy + Unrolled FNO** | **Improvement** |
 |---|---|---|---|
-| **Final L2 Error** | 3.60 × 10⁻⁶ | 5.78 × 10⁻⁸ | **5.70 × 10⁻⁸** |
-| **AUC** | 0.395 | 1.59 × 10⁻³ | **9.58 × 10⁻⁴** |
-| **vs. Classical (AUC)** | — | 248× lower | **412× lower** |
+| **Final L2 Error** | 3.60 × 10⁻⁶ | **5.70 × 10⁻⁸** | 63× lower |
+| **AUC** | 0.395 | **9.58 × 10⁻⁴** | 412× lower |
 
 </div>
 
-<div class="mt-5 grid grid-cols-2 gap-6 text-sm">
-<div class="pl-4 border-l-2 border-cyan-400 opacity-80">
+<div class="mt-5 pl-4 border-l-2 border-cyan-400 opacity-80 text-sm">
 
-**Greedy routing** with 3 SOR variants + an FNO achieves **412× lower AUC** than the best single classical solver on the 2D Poisson equation.
+**Greedy routing** with 3 SOR variants + an unrolled FNO achieves **412× lower AUC** than the best single classical solver on the 2D Poisson equation. The FNO is trained through unrolled trajectories so it learns to correct the residuals that *actually arise* mid-solve — not random i.i.d. residuals.
 
-</div>
-<div class="pl-4 border-l-2 border-amber-400 opacity-80">
-
-**Unrolled fine-tuning** — training the FNO on the residuals that *actually arise* mid-solve — provides a further **1.7× gain** over the pre-trained FNO.
-
-</div>
 </div>
 
 
