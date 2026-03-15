@@ -192,49 +192,6 @@ Each linear subproblem $A\mathbf{u} = \mathbf{b}$ is solved by repeated iteratio
 
 ---
 
-# Greedy Multi-Solver Routing
-
-<div class="grid grid-cols-2 gap-10 mt-4">
-<div>
-
-<div class="text-xs tracking-widest uppercase opacity-40 mb-3">The Idea</div>
-
-At each iteration, **choose the solver** that gives the best immediate error reduction:
-
-$$k^* = \arg\min_{k \in \{1,\ldots,K\}} \| u_k^{(t+1)} - u_{\text{true}} \|_2$$
-
-<div class="mt-5 rounded-lg p-4 bg-white/5 border border-white/10 text-sm">
-
-**Solver portfolio:**
-
-<div class="mt-2 font-mono text-xs space-y-1">
-
-- `SOR(ω=1.0)` — Gauss-Seidel
-- `SOR(ω=1.3)` — moderate over-relaxation
-- `SOR(ω=1.6)` — aggressive over-relaxation
-- `DeepONet` — ML correction
-
-</div>
-</div>
-
-</div>
-<div>
-
-<div class="text-xs tracking-widest uppercase opacity-40 mb-3">Why It Works</div>
-
-Each SOR variant has a different spectral damping profile:
-
-<img src="./images/eigenvalue_comparison.png" class="mt-2 rounded-lg border border-white/10" />
-
-<div class="text-xs mt-2 opacity-50">
-25% of modes have |λ<sub>Jacobi(0.67)</sub>| &lt; |λ<sub>GS</sub>|: different solvers excel on different modes.
-</div>
-
-</div>
-</div>
-
----
-
 # The Routing Loop
 
 <div class="flex justify-center">
