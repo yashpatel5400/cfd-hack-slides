@@ -28,16 +28,16 @@ SemiAnalysis x Fluidstack Hackathon
 
 # Motivation: Verification Is the Bottleneck
 
-<div class="grid grid-cols-2 gap-10 mt-6">
+<div class="grid grid-cols-2 gap-10 mt-3 text-sm">
 <div>
 
-<div class="text-xs tracking-widest uppercase opacity-40 mb-3">AI-Driven Engineering Design</div>
+<div class="text-xs tracking-widest uppercase opacity-40 mb-2">AI-Driven Engineering Design</div>
 
 AI workflows for engineering design are rapidly maturing — generative models can propose geometries, materials, and configurations at unprecedented speed.
 
 But **every AI-generated design must be verified** through physics simulation before it can be trusted.
 
-<div class="mt-5 pl-4 border-l-2 border-red-400 text-sm opacity-80">
+<div class="mt-3 pl-4 border-l-2 border-red-400 opacity-80">
 
 As generation gets faster, **verification (CFD/FEA simulation) becomes the dominant bottleneck** in the design loop.
 
@@ -46,13 +46,13 @@ As generation gets faster, **verification (CFD/FEA simulation) becomes the domin
 </div>
 <div>
 
-<div class="text-xs tracking-widest uppercase opacity-40 mb-3">The Neural Operator Dilemma</div>
+<div class="text-xs tracking-widest uppercase opacity-40 mb-2">The Neural Operator Dilemma</div>
 
 ML surrogates (neural operators, GNNs) can approximate PDE solutions **orders of magnitude faster** than classical solvers.
 
 But they offer **no convergence guarantees** — predictions may look plausible while being quantitatively wrong.
 
-<div class="mt-5 pl-4 border-l-2 border-cyan-400 text-sm opacity-80">
+<div class="mt-3 pl-4 border-l-2 border-cyan-400 opacity-80">
 
 **Our approach:** Route between classical methods (with guarantees) and ML surrogates (with speed). Use ML when it helps, fall back to classical when it doesn't, and **always converge**.
 
@@ -65,7 +65,7 @@ But they offer **no convergence guarantees** — predictions may look plausible 
 
 # Incompressible Navier–Stokes
 
-<div class="grid grid-cols-2 gap-12 mt-6">
+<div class="grid grid-cols-2 gap-10 mt-3">
 <div>
 
 The governing equations for incompressible flow:
@@ -78,7 +78,7 @@ $$
 \nabla \cdot \mathbf{u} = 0
 $$
 
-<div class="mt-4 text-sm opacity-70">
+<div class="mt-2 text-sm opacity-70">
 
 **Key challenge:** velocity and pressure are coupled; pressure has no independent evolution equation.
 
@@ -87,11 +87,11 @@ $$
 </div>
 <div>
 
-<div class="text-xs tracking-widest uppercase opacity-40 mb-4">Splitting Methods</div>
+<div class="text-xs tracking-widest uppercase opacity-40 mb-3">Splitting Methods</div>
 
 Projection / SIMPLE / PISO all split this into:
 
-<div class="mt-2 space-y-3 text-sm">
+<div class="mt-2 space-y-2 text-sm">
 <div class="flex gap-3 items-start">
 <span class="text-cyan-400 font-mono font-bold shrink-0">01</span>
 <div><strong>Momentum predictor</strong> — convection-diffusion solve for <strong>u</strong>*</div>
@@ -106,7 +106,7 @@ Projection / SIMPLE / PISO all split this into:
 </div>
 </div>
 
-<div class="mt-5 text-sm opacity-70">
+<div class="mt-3 text-sm opacity-70">
 
 The pressure Poisson solve is often the **dominant computational bottleneck**.
 
@@ -119,16 +119,16 @@ The pressure Poisson solve is often the **dominant computational bottleneck**.
 
 # The Two Core Subproblems
 
-<div class="grid grid-cols-2 gap-8 mt-6">
-<div class="rounded-lg p-5 bg-white/5 border border-white/10">
+<div class="grid grid-cols-2 gap-8 mt-3">
+<div class="rounded-lg p-4 bg-white/5 border border-white/10">
 
-<div class="text-cyan-400 text-xs tracking-widest uppercase mb-3">Momentum Predictor</div>
+<div class="text-cyan-400 text-xs tracking-widest uppercase mb-2">Momentum Predictor</div>
 
 **Convection-Diffusion Equation**
 
 $$-\nu \nabla^2 u_i + \mathbf{u} \cdot \nabla u_i = \text{source}$$
 
-<div class="mt-4 space-y-1 text-sm opacity-80">
+<div class="mt-2 space-y-1 text-sm opacity-80">
 
 - Advances velocity in time
 - Linearized using lagged velocity
@@ -137,15 +137,15 @@ $$-\nu \nabla^2 u_i + \mathbf{u} \cdot \nabla u_i = \text{source}$$
 </div>
 
 </div>
-<div class="rounded-lg p-5 bg-white/5 border border-white/10">
+<div class="rounded-lg p-4 bg-white/5 border border-white/10">
 
-<div class="text-cyan-400 text-xs tracking-widest uppercase mb-3">Pressure Correction</div>
+<div class="text-cyan-400 text-xs tracking-widest uppercase mb-2">Pressure Correction</div>
 
 **Poisson Equation**
 
 $$\nabla^2 p^{n+1} = \frac{\rho}{\Delta t} \nabla \cdot \mathbf{u}^*$$
 
-<div class="mt-4 space-y-1 text-sm opacity-80">
+<div class="mt-2 space-y-1 text-sm opacity-80">
 
 - Elliptic, globally coupled
 - Enforces incompressibility
@@ -156,7 +156,7 @@ $$\nabla^2 p^{n+1} = \frac{\rho}{\Delta t} \nabla \cdot \mathbf{u}^*$$
 </div>
 </div>
 
-<div class="mt-8 text-center opacity-60">
+<div class="mt-4 text-center opacity-60 text-sm">
 
 Both subproblems are solved iteratively — can we accelerate them with learned routing?
 
@@ -166,13 +166,13 @@ Both subproblems are solved iteratively — can we accelerate them with learned 
 
 # Iterative Solvers: The Landscape
 
-<div class="mt-4 text-sm opacity-80">
+<div class="mt-2 text-sm opacity-80">
 
 Each linear subproblem $A\mathbf{u} = \mathbf{b}$ is solved by repeated iteration:
 
 </div>
 
-<div class="mt-6">
+<div class="mt-3">
 
 | Solver | Per-step cost | Convergence | Strengths |
 |--------|:---:|:---:|-----------|
@@ -184,7 +184,7 @@ Each linear subproblem $A\mathbf{u} = \mathbf{b}$ is solved by repeated iteratio
 
 </div>
 
-<div class="mt-6 pl-4 border-l-2 border-cyan-400 text-sm opacity-80">
+<div class="mt-4 pl-4 border-l-2 border-cyan-400 text-sm opacity-80">
 
 **Key insight:** Different solvers damp different spectral modes of the error at different rates. No single solver is optimal at every stage of convergence.
 
@@ -303,9 +303,9 @@ class: text-center
 
 # 2D Poisson: Convergence
 
-<img src="./images/poisson_fno_convergence.png" class="w-full rounded-lg border border-white/10" />
+<img src="./images/poisson_fno_convergence.png" class="w-full max-h-96 object-contain rounded-lg border-0" />
 
-<div class="grid grid-cols-2 gap-6 mt-5 text-sm">
+<div class="grid grid-cols-2 gap-6 mt-3 text-sm">
 <div class="text-center p-3 rounded-lg bg-white/5 border border-white/10">
 
 **Best Classical (SOR 1.3)**
@@ -326,9 +326,9 @@ class: text-center
 
 # 2D Poisson: Routing Pattern
 
-<img src="./images/poisson_fno_routing.png" class="w-full rounded-lg border border-white/10" />
+<img src="./images/poisson_fno_routing.png" class="w-full max-h-96 object-contain rounded-lg border-0" />
 
-<div class="mt-4 text-sm opacity-80 space-y-2">
+<div class="mt-3 text-sm opacity-80 space-y-1">
 
 - **SOR(1.6)** dominates (~73%) — fastest for high-frequency error early on
 - **SOR(1.3)** used ~26% throughout — better for certain mid-frequency modes
@@ -350,9 +350,9 @@ class: text-center
 
 # 2D ConvDiff: Convergence
 
-<img src="./images/convdiff_fno_convergence.png" class="w-full rounded-lg border border-white/10" />
+<img src="./images/convdiff_fno_convergence.png" class="w-full max-h-96 object-contain rounded-lg border-0" />
 
-<div class="grid grid-cols-2 gap-6 mt-5 text-sm">
+<div class="grid grid-cols-2 gap-6 mt-3 text-sm">
 <div class="text-center p-3 rounded-lg bg-white/5 border border-white/10">
 
 **Best Classical (SOR 1.0)**
@@ -373,9 +373,9 @@ class: text-center
 
 # 2D ConvDiff: Routing Pattern
 
-<img src="./images/convdiff_fno_routing.png" class="w-full rounded-lg border border-white/10" />
+<img src="./images/convdiff_fno_routing.png" class="w-full max-h-96 object-contain rounded-lg border-0" />
 
-<div class="mt-4 text-sm opacity-80 space-y-2">
+<div class="mt-3 text-sm opacity-80 space-y-1">
 
 - **SOR(1.6)** dominates (~77%) — aggressive relaxation clears high-freq error fast
 - **SOR(1.0)** takes over ~17% — mainly in later iterations for low-frequency modes
@@ -388,7 +388,7 @@ class: text-center
 
 # Results Summary
 
-<div class="mt-4">
+<div class="mt-3">
 
 | | **Best Classical** | **Greedy + FNO** | **Greedy + Unrolled FNO** | **vs. Classical** |
 |---|---|---|---|---|
@@ -399,7 +399,7 @@ class: text-center
 
 </div>
 
-<div class="mt-6 pl-4 border-l-2 border-cyan-400 opacity-80">
+<div class="mt-4 pl-4 border-l-2 border-cyan-400 opacity-80 text-sm">
 
 **Key findings:** Greedy routing with an FNO achieves **up to 396× lower AUC** than the best single classical solver. Unrolled fine-tuning — training the FNO on real in-loop residuals — provides a further **1.6× gain** over the pre-trained FNO.
 
@@ -413,6 +413,10 @@ class: text-center
 .slidev-layout {
   background: #000 !important;
   color: #e4e4e7 !important;
+  overflow: hidden !important;
+}
+.slidev-page .slidev-layout {
+  padding: 2rem 2.5rem !important;
 }
 .slidev-layout h1 {
   color: #fff !important;
