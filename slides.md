@@ -234,6 +234,118 @@ Each SOR variant has a different spectral damping profile:
 </div>
 
 ---
+
+# The Routing Loop
+
+<div class="mt-2 flex justify-center">
+<div class="relative" style="width: 780px; height: 400px;">
+
+<!-- Central loop arc -->
+<svg viewBox="0 0 780 400" style="position:absolute;inset:0;width:100%;height:100%">
+  <!-- Big curved return arrow from right back to left -->
+  <defs>
+    <marker id="arrowC" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#22d3ee" opacity="0.4"/>
+    </marker>
+    <marker id="arrowW" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#fff" opacity="0.5"/>
+    </marker>
+    <marker id="arrowG" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#4ade80" opacity="0.7"/>
+    </marker>
+  </defs>
+  <!-- Forward arrows between states -->
+  <line x1="118" y1="140" x2="222" y2="140" stroke="#fff" stroke-width="1.5" opacity="0.3" marker-end="url(#arrowW)"/>
+  <line x1="348" y1="140" x2="452" y2="140" stroke="#fff" stroke-width="1.5" opacity="0.3" marker-end="url(#arrowW)"/>
+  <line x1="578" y1="140" x2="662" y2="140" stroke="#fff" stroke-width="1.5" opacity="0.15" stroke-dasharray="6,4" marker-end="url(#arrowW)"/>
+  <!-- Return arc: u^(t+1) feeds back -->
+  <path d="M 580,160 Q 620,320 390,340 Q 160,360 100,170" fill="none" stroke="#22d3ee" stroke-width="1.5" opacity="0.25" stroke-dasharray="6,4" marker-end="url(#arrowC)"/>
+  <!-- Training gradient arrow -->
+  <path d="M 390,290 L 390,230" stroke="#4ade80" stroke-width="1.5" opacity="0.5" marker-end="url(#arrowG)"/>
+</svg>
+
+<!-- State: u^(t) -->
+<div class="absolute flex flex-col items-center" style="left: 40px; top: 110px;">
+  <div class="px-4 py-2 rounded-lg bg-white/8 border border-white/15 text-center">
+    <div class="font-mono text-base text-white">u<sup>(t)</sup></div>
+    <div class="text-[10px] opacity-40 mt-1">current solution</div>
+  </div>
+</div>
+
+<!-- Decision node -->
+<div class="absolute flex flex-col items-center" style="left: 215px; top: 82px;">
+  <div class="text-[10px] tracking-widest uppercase opacity-30 mb-1">router picks k*</div>
+  <div class="relative">
+    <div class="w-28 h-28 rounded-xl bg-white/5 border border-cyan-400/30 flex items-center justify-center">
+      <div class="text-center">
+        <div class="text-[10px] tracking-widest uppercase text-cyan-400 opacity-70">action</div>
+        <div class="text-xs mt-1 font-mono opacity-80">argmin<sub>k</sub> err</div>
+      </div>
+    </div>
+    <!-- Solver branches -->
+    <div class="absolute text-[9px] font-mono" style="right: -80px; top: -4px;">
+      <div class="px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-400/20">SOR(1.0)</div>
+    </div>
+    <div class="absolute text-[9px] font-mono" style="right: -80px; top: 22px;">
+      <div class="px-2 py-0.5 rounded bg-orange-500/15 text-orange-300 border border-orange-400/20">SOR(1.3)</div>
+    </div>
+    <div class="absolute text-[9px] font-mono" style="right: -80px; top: 48px;">
+      <div class="px-2 py-0.5 rounded bg-red-500/15 text-red-300 border border-red-400/20">SOR(1.6)</div>
+    </div>
+    <div class="absolute text-[9px] font-mono" style="right: -80px; top: 76px;">
+      <div class="px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-300 border border-cyan-400/30">FNO ✦</div>
+    </div>
+  </div>
+</div>
+
+<!-- State: u^(t+1) -->
+<div class="absolute flex flex-col items-center" style="left: 460px; top: 110px;">
+  <div class="px-4 py-2 rounded-lg bg-white/8 border border-white/15 text-center">
+    <div class="font-mono text-base text-white">u<sup>(t+1)</sup></div>
+    <div class="text-[10px] opacity-40 mt-1">updated solution</div>
+  </div>
+</div>
+
+<!-- Dots to indicate continuation -->
+<div class="absolute font-mono text-xl tracking-[0.4em] opacity-20" style="left: 620px; top: 128px;">···</div>
+
+<!-- Converged -->
+<div class="absolute" style="left: 670px; top: 112px;">
+  <div class="px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-400/20 text-center">
+    <div class="font-mono text-sm text-emerald-400">u*</div>
+    <div class="text-[10px] opacity-40 mt-0.5">converged</div>
+  </div>
+</div>
+
+<!-- Training box -->
+<div class="absolute" style="left: 250px; top: 290px;">
+  <div class="px-5 py-3 rounded-lg bg-emerald-500/8 border border-emerald-400/20">
+    <div class="text-[10px] tracking-widest uppercase text-emerald-400 opacity-70 mb-1">Unrolled training</div>
+    <div class="text-xs opacity-70">FNO sees <span class="text-cyan-300 font-mono">real in-loop residuals</span></div>
+    <div class="text-xs opacity-50 mt-0.5">∇<sub>θ</sub> Σ<sub>t</sub> ‖FNO(r<sup>(t)</sup>) − correction*‖²</div>
+  </div>
+</div>
+
+<!-- Loop label -->
+<div class="absolute text-[10px] text-cyan-400 opacity-40 italic" style="left: 120px; top: 340px;">repeat until ‖r‖ &lt; ε</div>
+
+</div>
+</div>
+
+<div class="grid grid-cols-2 gap-8 mt-1 text-xs opacity-70">
+<div>
+
+**Inference:** At each iteration the router evaluates all K+1 candidates and picks the one minimising immediate error.
+
+</div>
+<div>
+
+**Training:** The FNO is fine-tuned through unrolled trajectories so it learns to correct the residuals that *actually arise* mid-solve — not random i.i.d. residuals.
+
+</div>
+</div>
+
+---
 class: text-center
 ---
 
@@ -400,101 +512,6 @@ class: text-center
 </div>
 </div>
 
----
-
-# Why Multi-Solver Routing?
-
-<div class="grid grid-cols-2 gap-12 mt-6">
-<div>
-
-<div class="text-xs tracking-widest uppercase opacity-40 mb-3">Spectral Intuition</div>
-
-Different solvers have different **eigenvalue amplification profiles**.
-
-As convergence progresses:
-
-<div class="mt-3 space-y-3">
-<div class="flex gap-3 items-start">
-<span class="text-cyan-400 font-mono font-bold text-xs">01</span>
-<span class="text-sm">High-freq error dies fast → all solvers good</span>
-</div>
-<div class="flex gap-3 items-start">
-<span class="text-cyan-400 font-mono font-bold text-xs">02</span>
-<span class="text-sm">Mid-freq error remains → SOR(1.6) excels</span>
-</div>
-<div class="flex gap-3 items-start">
-<span class="text-cyan-400 font-mono font-bold text-xs">03</span>
-<span class="text-sm">Low-freq error dominates → SOR(1.0) wins</span>
-</div>
-</div>
-
-<div class="mt-5 text-sm opacity-70">
-
-The **optimal solver changes during convergence**.
-
-</div>
-
-</div>
-<div>
-
-<div class="text-xs tracking-widest uppercase opacity-40 mb-3">Connection to CFD</div>
-
-Each CFD time step requires:
-
-- Multiple Poisson solves (pressure)
-- Multiple ConvDiff solves (momentum)
-
-A greedy router that adapts per-iteration could **reduce total iteration count** across the entire simulation.
-
-<div class="mt-5 rounded-lg p-4 bg-white/5 border border-white/10 text-sm">
-
-The router is lightweight — <span class="font-mono text-cyan-400">~10K params</span> — compared to the solvers themselves.
-
-</div>
-
-</div>
-</div>
-
----
-
-# Next Steps
-
-<div class="grid grid-cols-2 gap-12 mt-6">
-<div>
-
-<div class="text-xs tracking-widest uppercase opacity-40 mb-4">In Progress</div>
-
-<div class="space-y-4 text-sm">
-
-- **Improved ML surrogates** — larger DeepONet and FNO training in progress
-- **Learned router for K=4 SOR portfolio** — LSTM training to replace oracle
-- **Spectral analysis** of routing decisions
-
-</div>
-
-</div>
-<div>
-
-<div class="text-xs tracking-widest uppercase opacity-40 mb-4">Future Directions</div>
-
-<div class="space-y-4 text-sm">
-
-- **Multi-step lookahead** — RL-based planning instead of myopic greedy
-- **Cyclic CFD integration** — stitch Poisson and ConvDiff routers in a projection-method loop
-- **Variable coefficients** — per-sample optimal solvers for heterogeneous problems
-
-</div>
-
-</div>
-</div>
-
-<div class="mt-10 text-center">
-<div class="pl-4 pr-4 py-3 border border-cyan-400/30 rounded-lg inline-block text-sm">
-
-The key contribution: <span class="text-cyan-400">**adaptive, learned solver selection**</span> that exploits the complementary spectral properties of classical iterative methods and ML surrogates.
-
-</div>
-</div>
 
 <style>
 :root {
