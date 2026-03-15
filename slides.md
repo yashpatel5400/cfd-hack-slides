@@ -15,9 +15,11 @@ mdc: true
 Greedy Multi-Solver Routing<br>for PDE Linear Systems
 </div>
 
-<div class="mt-6 text-lg opacity-50 tracking-widest uppercase">
+<div class="mt-4 text-lg opacity-50 tracking-widest uppercase">
 Adaptive solver selection for incompressible CFD
 </div>
+
+<img src="./images/cfd_airflow.png" class="mt-6 w-160 h-32 object-cover rounded-lg opacity-60" />
 
 <div class="abs-b mb-10 text-sm tracking-widest uppercase opacity-30">
 SemiAnalysis x Fluidstack Hackathon
@@ -55,60 +57,6 @@ But they offer **no convergence guarantees** — predictions may look plausible 
 <div class="mt-3 pl-4 border-l-2 border-cyan-400 opacity-80">
 
 **Our approach:** Route between classical methods (with guarantees) and ML surrogates (with speed). Use ML when it helps, fall back to classical when it doesn't, and **always converge**.
-
-</div>
-
-</div>
-</div>
-
----
-
-# Incompressible Navier–Stokes
-
-<div class="grid grid-cols-2 gap-10 mt-3">
-<div>
-
-The governing equations for incompressible flow:
-
-$$
-\frac{\partial \mathbf{u}}{\partial t} + (\mathbf{u} \cdot \nabla)\mathbf{u} = -\frac{1}{\rho}\nabla p + \nu \nabla^2 \mathbf{u} + \mathbf{f}
-$$
-
-$$
-\nabla \cdot \mathbf{u} = 0
-$$
-
-<div class="mt-2 text-sm opacity-70">
-
-**Key challenge:** velocity and pressure are coupled; pressure has no independent evolution equation.
-
-</div>
-
-</div>
-<div>
-
-<div class="text-xs tracking-widest uppercase opacity-40 mb-3">Splitting Methods</div>
-
-Projection / SIMPLE / PISO all split this into:
-
-<div class="mt-2 space-y-2 text-sm">
-<div class="flex gap-3 items-start">
-<span class="text-cyan-400 font-mono font-bold shrink-0">01</span>
-<div><strong>Momentum predictor</strong> — convection-diffusion solve for <strong>u</strong>*</div>
-</div>
-<div class="flex gap-3 items-start">
-<span class="text-cyan-400 font-mono font-bold shrink-0">02</span>
-<div><strong>Pressure Poisson solve</strong> — enforce ∇ · <strong>u</strong> = 0</div>
-</div>
-<div class="flex gap-3 items-start">
-<span class="text-cyan-400 font-mono font-bold shrink-0">03</span>
-<div><strong>Velocity correction</strong> — project onto divergence-free space</div>
-</div>
-</div>
-
-<div class="mt-3 text-sm opacity-70">
-
-The pressure Poisson solve is often the **dominant computational bottleneck**.
 
 </div>
 
@@ -159,34 +107,6 @@ $$\nabla^2 p^{n+1} = \frac{\rho}{\Delta t} \nabla \cdot \mathbf{u}^*$$
 <div class="mt-4 text-center opacity-60 text-sm">
 
 Both subproblems are solved iteratively — can we accelerate them with learned routing?
-
-</div>
-
----
-
-# Iterative Solvers: The Landscape
-
-<div class="mt-2 text-sm opacity-80">
-
-Each linear subproblem $A\mathbf{u} = \mathbf{b}$ is solved by repeated iteration:
-
-</div>
-
-<div class="mt-3">
-
-| Solver | Per-step cost | Convergence | Strengths |
-|--------|:---:|:---:|-----------|
-| Jacobi($\omega$) | $O(N^2)$ | Slow | Parallelizable, tunable damping |
-| Gauss-Seidel | $O(N^2)$ | ~2× Jacobi | Better for low-freq error |
-| SOR($\omega$) | $O(N^2)$ | Tunable | Optimal $\omega$ can be much faster |
-| Multigrid | $O(N^2)$ | $O(1)$ iters | Optimal, but complex |
-| **FNO (ours)** | $O(N^2)$ | One-shot | Large initial correction |
-
-</div>
-
-<div class="mt-4 pl-4 border-l-2 border-cyan-400 text-sm opacity-80">
-
-**Key insight:** Different solvers damp different spectral modes of the error at different rates. No single solver is optimal at every stage of convergence.
 
 </div>
 
@@ -303,7 +223,7 @@ class: text-center
 
 # 2D Poisson: Convergence
 
-<img src="./images/poisson_fno_convergence.png" class="w-full max-h-96 object-contain rounded-lg border-0" />
+<img src="./images/poisson_fno_convergence.png" class="w-full max-h-80 object-contain rounded-lg border-0" />
 
 <div class="grid grid-cols-2 gap-6 mt-3 text-sm">
 <div class="text-center p-3 rounded-lg bg-white/5 border border-white/10">
@@ -326,7 +246,7 @@ class: text-center
 
 # 2D Poisson: Routing Pattern
 
-<img src="./images/poisson_fno_routing.png" class="w-full max-h-96 object-contain rounded-lg border-0" />
+<img src="./images/poisson_fno_routing.png" class="w-full max-h-80 object-contain rounded-lg border-0" />
 
 <div class="mt-3 text-sm opacity-80 space-y-1">
 
@@ -350,7 +270,7 @@ class: text-center
 
 # 2D ConvDiff: Convergence
 
-<img src="./images/convdiff_fno_convergence.png" class="w-full max-h-96 object-contain rounded-lg border-0" />
+<img src="./images/convdiff_fno_convergence.png" class="w-full max-h-80 object-contain rounded-lg border-0" />
 
 <div class="grid grid-cols-2 gap-6 mt-3 text-sm">
 <div class="text-center p-3 rounded-lg bg-white/5 border border-white/10">
@@ -373,7 +293,7 @@ class: text-center
 
 # 2D ConvDiff: Routing Pattern
 
-<img src="./images/convdiff_fno_routing.png" class="w-full max-h-96 object-contain rounded-lg border-0" />
+<img src="./images/convdiff_fno_routing.png" class="w-full max-h-80 object-contain rounded-lg border-0" />
 
 <div class="mt-3 text-sm opacity-80 space-y-1">
 
