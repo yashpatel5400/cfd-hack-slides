@@ -15,9 +15,11 @@ mdc: true
 Greedy Multi-Solver Routing<br>for PDE Linear Systems
 </div>
 
-<div class="mt-6 text-lg opacity-50 tracking-widest uppercase">
+<div class="mt-4 text-lg opacity-50 tracking-widest uppercase">
 Adaptive solver selection for incompressible CFD
 </div>
+
+<img src="./images/cfd_airflow.png" class="mt-6 w-160 h-32 object-cover rounded-lg opacity-60" />
 
 <div class="abs-b mb-10 text-sm tracking-widest uppercase opacity-30">
 SemiAnalysis x Fluidstack Hackathon
@@ -316,7 +318,7 @@ class: text-center
 
 # 2D Poisson: Convergence
 
-<img src="./images/poisson_fno_convergence.png" class="w-full max-h-96 object-contain rounded-lg border-0" />
+<img src="./images/poisson_fno_convergence.png" class="w-full max-h-80 object-contain rounded-lg border-0" />
 
 <div class="grid grid-cols-2 gap-6 mt-3 text-sm">
 <div class="text-center p-3 rounded-lg bg-white/5 border border-white/10">
@@ -339,7 +341,7 @@ class: text-center
 
 # 2D Poisson: Routing Pattern
 
-<img src="./images/poisson_fno_routing.png" class="w-full max-h-96 object-contain rounded-lg border-0" />
+<img src="./images/poisson_fno_routing.png" class="w-full max-h-80 object-contain rounded-lg border-0" />
 
 <div class="mt-3 text-sm opacity-80 space-y-1">
 
