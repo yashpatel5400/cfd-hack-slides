@@ -316,8 +316,8 @@ class: text-center
 <div class="text-center p-3 rounded-lg bg-white/5 border border-cyan-400/40">
 
 <span class="text-cyan-400">**Greedy + Unrolled FNO**</span>
-<br><span class="font-mono text-xs">Final L2: 5.72 × 10⁻⁸</span>
-<br><span class="font-mono text-xs text-cyan-400">AUC: 9.98 × 10⁻⁴ — 396× lower</span>
+<br><span class="font-mono text-xs">Final L2: 5.70 × 10⁻⁸</span>
+<br><span class="font-mono text-xs text-cyan-400">AUC: 9.58 × 10⁻⁴ — 412× lower</span>
 
 </div>
 </div>
@@ -392,8 +392,8 @@ class: text-center
 
 | | **Best Classical** | **Greedy + FNO** | **Greedy + Unrolled FNO** | **vs. Classical** |
 |---|---|---|---|---|
-| **Poisson — Final L2** | 3.60 × 10⁻⁶ | 5.78 × 10⁻⁸ | **5.72 × 10⁻⁸** | 63× lower |
-| **Poisson — AUC** | 0.395 | 1.59 × 10⁻³ | **9.98 × 10⁻⁴** | 396× lower |
+| **Poisson — Final L2** | 3.60 × 10⁻⁶ | 5.78 × 10⁻⁸ | **5.70 × 10⁻⁸** | 63× lower |
+| **Poisson — AUC** | 0.395 | 1.59 × 10⁻³ | **9.58 × 10⁻⁴** | 412× lower |
 | **ConvDiff — Final L2** | 1.84 × 10⁻⁸ | **1.41 × 10⁻⁸** | *in progress* | 1.3× lower |
 | **ConvDiff — AUC** | 0.091 | **0.058** | *in progress* | 1.6× lower |
 
@@ -401,7 +401,7 @@ class: text-center
 
 <div class="mt-4 pl-4 border-l-2 border-cyan-400 opacity-80 text-sm">
 
-**Key findings:** Greedy routing with an FNO achieves **up to 396× lower AUC** than the best single classical solver. Unrolled fine-tuning — training the FNO on real in-loop residuals — provides a further **1.6× gain** over the pre-trained FNO.
+**Key findings:** Greedy routing with an FNO achieves **up to 412× lower AUC** than the best single classical solver. Unrolled fine-tuning — training the FNO on real in-loop residuals — provides a further **1.7× gain** over the pre-trained FNO.
 
 </div>
 
