@@ -46,7 +46,7 @@ As generation gets faster, **verification (CFD/FEA simulation) becomes the domin
 </div>
 <div>
 
-<div class="text-xs tracking-widest uppercase opacity-40 mb-3">The ML Surrogate Dilemma</div>
+<div class="text-xs tracking-widest uppercase opacity-40 mb-3">The Neural Operator Dilemma</div>
 
 ML surrogates (neural operators, GNNs) can approximate PDE solutions **orders of magnitude faster** than classical solvers.
 
@@ -180,7 +180,7 @@ Each linear subproblem $A\mathbf{u} = \mathbf{b}$ is solved by repeated iteratio
 | Gauss-Seidel | $O(N^2)$ | ~2× Jacobi | Better for low-freq error |
 | SOR($\omega$) | $O(N^2)$ | Tunable | Optimal $\omega$ can be much faster |
 | Multigrid | $O(N^2)$ | $O(1)$ iters | Optimal, but complex |
-| **ML Surrogate** | $O(N^2)$ | One-shot | Large initial correction |
+| **FNO (ours)** | $O(N^2)$ | One-shot | Large initial correction |
 
 </div>
 
@@ -296,35 +296,28 @@ class: text-center
 <div class="h-full flex flex-col items-center justify-center">
 <div class="text-xs tracking-widest uppercase opacity-30 mb-4">Results</div>
 <div class="text-4xl font-bold tracking-tight">2D Poisson Equation</div>
-<div class="mt-4 text-lg opacity-50">Oracle greedy with SOR portfolio — K = 4 solvers</div>
+<div class="mt-4 text-lg opacity-50">Oracle greedy with SOR portfolio + FNO — 4 solvers</div>
 </div>
 
 ---
 
 # 2D Poisson: Convergence
 
-<img src="./images/poisson_sor_convergence.png" class="w-full rounded-lg border border-white/10" />
+<img src="./images/poisson_fno_convergence.png" class="w-full rounded-lg border border-white/10" />
 
-<div class="grid grid-cols-3 gap-6 mt-5 text-sm">
+<div class="grid grid-cols-2 gap-6 mt-5 text-sm">
 <div class="text-center p-3 rounded-lg bg-white/5 border border-white/10">
 
-**SOR(1.0) Only**
-<br><span class="font-mono text-xs">Final L2: 2.17 × 10⁻⁵</span>
-<br><span class="font-mono text-xs">AUC: 0.485</span>
-
-</div>
-<div class="text-center p-3 rounded-lg bg-white/5 border border-white/10">
-
-**HINTS**
-<br><span class="font-mono text-xs">Final L2: 4.61 × 10⁻⁴</span>
-<br><span class="font-mono text-xs">AUC: 0.377</span>
+**Best Classical (SOR 1.3)**
+<br><span class="font-mono text-xs">Final L2: 3.60 × 10⁻⁶</span>
+<br><span class="font-mono text-xs">AUC: 0.395</span>
 
 </div>
 <div class="text-center p-3 rounded-lg bg-white/5 border border-cyan-400/40">
 
-<span class="text-cyan-400">**Greedy (Oracle)**</span>
-<br><span class="font-mono text-xs">Final L2: 2.45 × 10⁻⁷</span>
-<br><span class="font-mono text-xs text-cyan-400">AUC: 0.115 — 4.2× better</span>
+<span class="text-cyan-400">**Greedy + Unrolled FNO**</span>
+<br><span class="font-mono text-xs">Final L2: 5.72 × 10⁻⁸</span>
+<br><span class="font-mono text-xs text-cyan-400">AUC: 9.98 × 10⁻⁴ — 396× lower</span>
 
 </div>
 </div>
@@ -333,13 +326,13 @@ class: text-center
 
 # 2D Poisson: Routing Pattern
 
-<img src="./images/poisson_sor_routing.png" class="w-full rounded-lg border border-white/10" />
+<img src="./images/poisson_fno_routing.png" class="w-full rounded-lg border border-white/10" />
 
 <div class="mt-4 text-sm opacity-80 space-y-2">
 
-- **SOR(1.6)** dominates (~74%) — fastest for high-frequency error early on
-- **SOR(1.3)** used ~25% throughout — better for certain mid-frequency modes
-- **DeepONet** used sparingly (0.3%) — one-shot correction in first few iterations
+- **SOR(1.6)** dominates (~73%) — fastest for high-frequency error early on
+- **SOR(1.3)** used ~26% throughout — better for certain mid-frequency modes
+- **FNO** used sparingly (~0.3%) but delivers a large one-shot correction when selected
 
 </div>
 
@@ -350,35 +343,28 @@ class: text-center
 <div class="h-full flex flex-col items-center justify-center">
 <div class="text-xs tracking-widest uppercase opacity-30 mb-4">Results</div>
 <div class="text-4xl font-bold tracking-tight">2D Convection-Diffusion</div>
-<div class="mt-4 text-lg opacity-50">Oracle greedy with SOR portfolio — the more interesting case</div>
+<div class="mt-4 text-lg opacity-50">Oracle greedy with SOR portfolio + FNO — 4 solvers</div>
 </div>
 
 ---
 
 # 2D ConvDiff: Convergence
 
-<img src="./images/convdiff_sor_convergence.png" class="w-full rounded-lg border border-white/10" />
+<img src="./images/convdiff_fno_convergence.png" class="w-full rounded-lg border border-white/10" />
 
-<div class="grid grid-cols-3 gap-6 mt-5 text-sm">
+<div class="grid grid-cols-2 gap-6 mt-5 text-sm">
 <div class="text-center p-3 rounded-lg bg-white/5 border border-white/10">
 
-**SOR(1.0) Only**
+**Best Classical (SOR 1.0)**
 <br><span class="font-mono text-xs">Final L2: 1.84 × 10⁻⁸</span>
 <br><span class="font-mono text-xs">AUC: 0.091</span>
 
 </div>
-<div class="text-center p-3 rounded-lg bg-white/5 border border-white/10">
-
-**HINTS**
-<br><span class="font-mono text-xs">Final L2: 1.03 × 10⁻⁴</span>
-<br><span class="font-mono text-xs">AUC: 0.101</span>
-
-</div>
 <div class="text-center p-3 rounded-lg bg-white/5 border border-cyan-400/40">
 
-<span class="text-cyan-400">**Greedy (Oracle)**</span>
+<span class="text-cyan-400">**Greedy + FNO**</span>
 <br><span class="font-mono text-xs">Final L2: 1.41 × 10⁻⁸</span>
-<br><span class="font-mono text-xs text-cyan-400">AUC: 0.019 — 4.8× better</span>
+<br><span class="font-mono text-xs text-cyan-400">AUC: 0.058 — 1.6× lower</span>
 
 </div>
 </div>
@@ -387,13 +373,13 @@ class: text-center
 
 # 2D ConvDiff: Routing Pattern
 
-<img src="./images/convdiff_sor_routing.png" class="w-full rounded-lg border border-white/10" />
+<img src="./images/convdiff_fno_routing.png" class="w-full rounded-lg border border-white/10" />
 
 <div class="mt-4 text-sm opacity-80 space-y-2">
 
-- Clear **phase transition** at iteration ~150–200
-- Early: SOR(1.6) dominates (high-freq damping)
-- Late: **SOR(1.0) rises to ~60%** as low-frequency modes dominate the residual
+- **SOR(1.6)** dominates (~77%) — aggressive relaxation clears high-freq error fast
+- **SOR(1.0)** takes over ~17% — mainly in later iterations for low-frequency modes
+- **FNO** used sparingly (~0.7%) — targeted one-shot corrections in early iterations
 - The optimal relaxation parameter **shifts during convergence** — routing captures this
 
 </div>
@@ -402,58 +388,21 @@ class: text-center
 
 # Results Summary
 
-<div class="mt-6">
+<div class="mt-4">
 
-| | **SOR(1.0) Only** | **HINTS** | **Oracle Greedy** | **vs. Best Baseline** |
+| | **Best Classical** | **Greedy + FNO** | **Greedy + Unrolled FNO** | **vs. Classical** |
 |---|---|---|---|---|
-| **Poisson — Final L2** | 2.17 × 10⁻⁵ | 4.61 × 10⁻⁴ | **2.45 × 10⁻⁷** | 88× lower |
-| **Poisson — AUC** | 0.485 | 0.377 | **0.115** | 4.2× lower |
-| **ConvDiff — Final L2** | 1.84 × 10⁻⁸ | 1.03 × 10⁻⁴ | **1.41 × 10⁻⁸** | 1.3× lower |
-| **ConvDiff — AUC** | 0.091 | 0.101 | **0.019** | 4.8× lower |
+| **Poisson — Final L2** | 3.60 × 10⁻⁶ | 5.78 × 10⁻⁸ | **5.72 × 10⁻⁸** | 63× lower |
+| **Poisson — AUC** | 0.395 | 1.59 × 10⁻³ | **9.98 × 10⁻⁴** | 396× lower |
+| **ConvDiff — Final L2** | 1.84 × 10⁻⁸ | **1.41 × 10⁻⁸** | *in progress* | 1.3× lower |
+| **ConvDiff — AUC** | 0.091 | **0.058** | *in progress* | 1.6× lower |
 
 </div>
 
-<div class="mt-8 pl-4 border-l-2 border-cyan-400 opacity-80">
+<div class="mt-6 pl-4 border-l-2 border-cyan-400 opacity-80">
 
-**Key finding:** Multi-solver greedy routing achieves **4–5× lower AUC** than any single solver or fixed schedule (HINTS). The gains come from adapting the solver choice to the current error spectrum.
+**Key findings:** Greedy routing with an FNO achieves **up to 396× lower AUC** than the best single classical solver. Unrolled fine-tuning — training the FNO on real in-loop residuals — provides a further **1.6× gain** over the pre-trained FNO.
 
-</div>
-
----
-
-# K=2 Baseline: Learned Router Also Works
-
-<div class="text-sm opacity-70 mt-1">Prior results with Jacobi + DeepONet (K=2) and a learned LSTM router</div>
-
-<div class="grid grid-cols-2 gap-8 mt-5 text-sm">
-<div class="rounded-lg p-4 bg-white/5 border border-white/10">
-
-<div class="text-cyan-400 text-xs tracking-widest uppercase mb-3">2D Poisson (K=2)</div>
-
-| Strategy | Final L2 | AUC |
-|---|---|---|
-| Jacobi Only | 4.37 × 10⁻⁴ | 0.919 |
-| HINTS | 7.29 × 10⁻⁴ | 0.523 |
-| Oracle Greedy | 4.41 × 10⁻⁵ | 0.192 |
-| **LSTM Router** | **1.05 × 10⁻⁴** | **0.329** |
-
-<div class="mt-3 text-cyan-400 font-mono text-xs">LSTM Router: 2.8× better AUC than baseline</div>
-
-</div>
-<div class="rounded-lg p-4 bg-white/5 border border-white/10">
-
-<div class="text-cyan-400 text-xs tracking-widest uppercase mb-3">2D ConvDiff (K=2)</div>
-
-| Strategy | Final L2 | AUC |
-|---|---|---|
-| Jacobi Only | 1.55 × 10⁻⁴ | 0.337 |
-| HINTS | 1.80 × 10⁻⁴ | 0.186 |
-| Oracle Greedy | 1.29 × 10⁻⁵ | 0.077 |
-| **LSTM Router** | **4.20 × 10⁻⁵** | **0.136** |
-
-<div class="mt-3 text-cyan-400 font-mono text-xs">LSTM Router: 2.5× better AUC than baseline</div>
-
-</div>
 </div>
 
 
