@@ -91,18 +91,18 @@ $$
 
 Projection / SIMPLE / PISO all split this into:
 
-<div class="mt-2 space-y-3">
+<div class="mt-2 space-y-3 text-sm">
 <div class="flex gap-3 items-start">
-<span class="text-cyan-400 font-mono font-bold">01</span>
-<span>**Momentum predictor** — convection-diffusion solve for $\mathbf{u}^*$</span>
+<span class="text-cyan-400 font-mono font-bold shrink-0">01</span>
+<div><strong>Momentum predictor</strong> — convection-diffusion solve for <strong>u</strong>*</div>
 </div>
 <div class="flex gap-3 items-start">
-<span class="text-cyan-400 font-mono font-bold">02</span>
-<span>**Pressure Poisson solve** — enforce $\nabla \cdot \mathbf{u} = 0$</span>
+<span class="text-cyan-400 font-mono font-bold shrink-0">02</span>
+<div><strong>Pressure Poisson solve</strong> — enforce ∇ · <strong>u</strong> = 0</div>
 </div>
 <div class="flex gap-3 items-start">
-<span class="text-cyan-400 font-mono font-bold">03</span>
-<span>**Velocity correction** — project onto divergence-free space</span>
+<span class="text-cyan-400 font-mono font-bold shrink-0">03</span>
+<div><strong>Velocity correction</strong> — project onto divergence-free space</div>
 </div>
 </div>
 
