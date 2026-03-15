@@ -26,20 +26,23 @@ SemiAnalysis x Fluidstack Hackathon
 
 ---
 
-# Motivation: Verification Is the Bottleneck
+# Motivation: The Poisson Equation Is Everywhere
 
 <div class="grid grid-cols-2 gap-10 mt-3 text-sm">
 <div>
 
-<div class="text-xs tracking-widest uppercase opacity-40 mb-2">AI-Driven Engineering Design</div>
+<div class="text-xs tracking-widest uppercase opacity-40 mb-2">Ubiquity of Poisson Solves</div>
 
-AI workflows for engineering design are rapidly maturing — generative models can propose geometries, materials, and configurations at unprecedented speed.
+The Poisson equation $\nabla^2 u = f$ appears as a **core computational kernel** across science and engineering:
 
-But **every AI-generated design must be verified** through physics simulation before it can be trusted.
+<div class="mt-2 space-y-1 text-[0.82rem] opacity-80">
 
-<div class="mt-3 pl-4 border-l-2 border-red-400 opacity-80">
-
-As generation gets faster, **verification (CFD/FEA simulation) becomes the dominant bottleneck** in the design loop.
+- **CFD** — pressure projection in incompressible Navier–Stokes
+- **Electrostatics** — electric potential from charge distributions
+- **Gravitational physics** — potential fields in astrophysics, geodesy
+- **Structural mechanics** — stress analysis, plate bending
+- **Heat transfer** — steady-state temperature distributions
+- **Image processing** — Poisson blending, inpainting, surface reconstruction
 
 </div>
 
@@ -48,13 +51,19 @@ As generation gets faster, **verification (CFD/FEA simulation) becomes the domin
 
 <div class="text-xs tracking-widest uppercase opacity-40 mb-2">The Neural Operator Dilemma</div>
 
-ML surrogates (neural operators, GNNs) can approximate PDE solutions **orders of magnitude faster** than classical solvers.
+Neural operators can approximate PDE solutions **orders of magnitude faster** than classical solvers.
 
 But they offer **no convergence guarantees** — predictions may look plausible while being quantitatively wrong.
 
 <div class="mt-3 pl-4 border-l-2 border-cyan-400 opacity-80">
 
-**Our approach:** Route between classical methods (with guarantees) and ML surrogates (with speed). Use ML when it helps, fall back to classical when it doesn't, and **always converge**.
+**Our approach:** Route between classical iterative methods (with guarantees) and a neural operator (with speed). Use ML when it helps, fall back to classical when it doesn't, and **always converge**.
+
+</div>
+
+<div class="mt-3 pl-4 border-l-2 border-amber-400 opacity-80">
+
+Accelerating the Poisson solve has **outsized practical impact** — it is the dominant bottleneck in projection-based CFD solvers and appears in virtually every branch of computational physics.
 
 </div>
 
@@ -117,49 +126,53 @@ The pressure Poisson solve is often the **dominant computational bottleneck**.
 
 ---
 
-# The Two Core Subproblems
+# Focus: The Pressure Poisson Equation
 
-<div class="grid grid-cols-2 gap-8 mt-3">
-<div class="rounded-lg p-4 bg-white/5 border border-white/10">
+<div class="grid grid-cols-[1fr,1.3fr] gap-8 mt-3">
+<div>
 
-<div class="text-cyan-400 text-xs tracking-widest uppercase mb-2">Momentum Predictor</div>
+<div class="text-xs tracking-widest uppercase opacity-40 mb-2">In CFD Splitting Methods</div>
 
-**Convection-Diffusion Equation**
-
-$$-\nu \nabla^2 u_i + \mathbf{u} \cdot \nabla u_i = \text{source}$$
-
-<div class="mt-2 space-y-1 text-sm opacity-80">
-
-- Advances velocity in time
-- Linearized using lagged velocity
-- One solve per velocity component
-
-</div>
-
-</div>
-<div class="rounded-lg p-4 bg-white/5 border border-white/10">
-
-<div class="text-cyan-400 text-xs tracking-widest uppercase mb-2">Pressure Correction</div>
-
-**Poisson Equation**
+Projection / SIMPLE / PISO all require solving:
 
 $$\nabla^2 p^{n+1} = \frac{\rho}{\Delta t} \nabla \cdot \mathbf{u}^*$$
 
+<div class="mt-3 space-y-1 text-sm opacity-80">
+
+- **Elliptic** — globally coupled, every grid point depends on every other
+- **Solved every timestep** — often multiple times per outer iteration
+- **Dominant cost** — typically 50–80% of total CFD solve time
+
+</div>
+
+</div>
+<div>
+
+<div class="text-xs tracking-widest uppercase opacity-40 mb-2">Our Test Problem</div>
+
+<div class="rounded-lg p-4 bg-white/5 border border-cyan-400/30">
+
+**2D Poisson with periodic boundary conditions**
+
+$$-\nabla^2 u = f \quad \text{on } [0,1]^2$$
+
 <div class="mt-2 space-y-1 text-sm opacity-80">
 
-- Elliptic, globally coupled
-- Enforces incompressibility
-- Often the main bottleneck
+- Grid size $N = 31$ ($961$ unknowns)
+- Forcing $f$ drawn from hierarchical Gaussian random fields
+- Solutions unique up to a constant (mean-zero constraint)
 
 </div>
 
 </div>
+
+<div class="mt-3 text-sm opacity-70">
+
+This isolates the core challenge: **can adaptive solver routing accelerate convergence of the Poisson linear system?**
+
 </div>
 
-<div class="mt-4 text-center opacity-60 text-sm">
-
-Both subproblems are solved iteratively — can we accelerate them with learned routing?
-
+</div>
 </div>
 
 ---
@@ -296,7 +309,7 @@ class: text-center
 <div class="h-full flex flex-col items-center justify-center">
 <div class="text-xs tracking-widest uppercase opacity-30 mb-4">Results</div>
 <div class="text-4xl font-bold tracking-tight">2D Poisson Equation</div>
-<div class="mt-4 text-lg opacity-50">Oracle greedy with SOR portfolio + FNO — 4 solvers</div>
+<div class="mt-4 text-lg opacity-50">Oracle greedy routing — SOR(1.0) + SOR(1.3) + SOR(1.6) + FNO</div>
 </div>
 
 ---
@@ -337,72 +350,30 @@ class: text-center
 </div>
 
 ---
-class: text-center
----
-
-<div class="h-full flex flex-col items-center justify-center">
-<div class="text-xs tracking-widest uppercase opacity-30 mb-4">Results</div>
-<div class="text-4xl font-bold tracking-tight">2D Convection-Diffusion</div>
-<div class="mt-4 text-lg opacity-50">Oracle greedy with SOR portfolio + FNO — 4 solvers</div>
-</div>
-
----
-
-# 2D ConvDiff: Convergence
-
-<img src="./images/convdiff_fno_convergence.png" class="w-full max-h-96 object-contain rounded-lg border-0" />
-
-<div class="grid grid-cols-2 gap-6 mt-3 text-sm">
-<div class="text-center p-3 rounded-lg bg-white/5 border border-white/10">
-
-**Best Classical (SOR 1.0)**
-<br><span class="font-mono text-xs">Final L2: 1.84 × 10⁻⁸</span>
-<br><span class="font-mono text-xs">AUC: 0.091</span>
-
-</div>
-<div class="text-center p-3 rounded-lg bg-white/5 border border-cyan-400/40">
-
-<span class="text-cyan-400">**Greedy + FNO**</span>
-<br><span class="font-mono text-xs">Final L2: 1.41 × 10⁻⁸</span>
-<br><span class="font-mono text-xs text-cyan-400">AUC: 0.058 — 1.6× lower</span>
-
-</div>
-</div>
-
----
-
-# 2D ConvDiff: Routing Pattern
-
-<img src="./images/convdiff_fno_routing.png" class="w-full max-h-96 object-contain rounded-lg border-0" />
-
-<div class="mt-3 text-sm opacity-80 space-y-1">
-
-- **SOR(1.6)** dominates (~77%) — aggressive relaxation clears high-freq error fast
-- **SOR(1.0)** takes over ~17% — mainly in later iterations for low-frequency modes
-- **FNO** used sparingly (~0.7%) — targeted one-shot corrections in early iterations
-- The optimal relaxation parameter **shifts during convergence** — routing captures this
-
-</div>
-
----
 
 # Results Summary
 
-<div class="mt-3">
+<div class="mt-4">
 
-| | **Best Classical** | **Greedy + FNO** | **Greedy + Unrolled FNO** | **vs. Classical** |
-|---|---|---|---|---|
-| **Poisson — Final L2** | 3.60 × 10⁻⁶ | 5.78 × 10⁻⁸ | **5.70 × 10⁻⁸** | 63× lower |
-| **Poisson — AUC** | 0.395 | 1.59 × 10⁻³ | **9.58 × 10⁻⁴** | 412× lower |
-| **ConvDiff — Final L2** | 1.84 × 10⁻⁸ | **1.41 × 10⁻⁸** | *in progress* | 1.3× lower |
-| **ConvDiff — AUC** | 0.091 | **0.058** | *in progress* | 1.6× lower |
+| | **Best Classical (SOR 1.3)** | **Greedy + Pre-trained FNO** | **Greedy + Unrolled FNO** |
+|---|---|---|---|
+| **Final L2 Error** | 3.60 × 10⁻⁶ | 5.78 × 10⁻⁸ | **5.70 × 10⁻⁸** |
+| **AUC** | 0.395 | 1.59 × 10⁻³ | **9.58 × 10⁻⁴** |
+| **vs. Classical (AUC)** | — | 248× lower | **412× lower** |
 
 </div>
 
-<div class="mt-4 pl-4 border-l-2 border-cyan-400 opacity-80 text-sm">
+<div class="mt-5 grid grid-cols-2 gap-6 text-sm">
+<div class="pl-4 border-l-2 border-cyan-400 opacity-80">
 
-**Key findings:** Greedy routing with an FNO achieves **up to 412× lower AUC** than the best single classical solver. Unrolled fine-tuning — training the FNO on real in-loop residuals — provides a further **1.7× gain** over the pre-trained FNO.
+**Greedy routing** with 3 SOR variants + an FNO achieves **412× lower AUC** than the best single classical solver on the 2D Poisson equation.
 
+</div>
+<div class="pl-4 border-l-2 border-amber-400 opacity-80">
+
+**Unrolled fine-tuning** — training the FNO on the residuals that *actually arise* mid-solve — provides a further **1.7× gain** over the pre-trained FNO.
+
+</div>
 </div>
 
 
