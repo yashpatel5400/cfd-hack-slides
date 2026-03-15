@@ -204,6 +204,51 @@ This isolates the core challenge: **can adaptive solver routing accelerate conve
 </div>
 
 ---
+
+# Oracle Greedy vs. Learned Router
+
+<div class="grid grid-cols-2 gap-10 mt-6">
+<div>
+
+<div class="text-xs tracking-widest uppercase opacity-40 mb-2">Oracle Greedy (upper bound)</div>
+
+<div class="rounded-lg p-5 bg-white/5 border border-emerald-400/30 space-y-3 text-sm opacity-85">
+
+At every iteration, the oracle **tries every solver** on the current state, measures which one actually reduces the error the most, and picks that one.
+
+This is **cheating** — it requires knowing the true solution to measure error. We can't do this in practice, but it tells us the **best possible** routing strategy.
+
+<div class="pl-3 border-l-2 border-emerald-400/50 text-xs opacity-70 mt-3">
+Think of it as a chess player who can see every possible move's outcome one step ahead and always picks the best.
+</div>
+
+</div>
+
+</div>
+<div>
+
+<div class="text-xs tracking-widest uppercase opacity-40 mb-2">Learned LSTM Router (practical)</div>
+
+<div class="rounded-lg p-5 bg-white/5 border border-cyan-400/30 space-y-3 text-sm opacity-85">
+
+A small recurrent neural network that **observes the solver state** (current residual, iteration count) and **predicts** which solver will be most effective — without access to the true solution.
+
+Trained to **imitate the oracle's decisions** on a training set, then deployed on new problems it has never seen.
+
+<div class="pl-3 border-l-2 border-cyan-400/50 text-xs opacity-70 mt-3">
+The gap between the oracle and the router measures how much room remains for improving the learned policy.
+</div>
+
+</div>
+
+</div>
+</div>
+
+<div class="mt-5 text-center text-xs opacity-40">
+The oracle establishes what is achievable · the router shows what we can do without privileged information
+</div>
+
+---
 class: text-center
 ---
 
@@ -217,21 +262,28 @@ class: text-center
 
 # 2D Poisson: Convergence
 
-<img src="./images/poisson_fno_convergence.png" class="w-full max-h-80 object-contain rounded-lg border-0" />
+<img src="./images/poisson_fno_convergence.png" class="w-full max-h-72 object-contain rounded-lg border-0" />
 
-<div class="grid grid-cols-2 gap-6 mt-3 text-sm">
+<div class="grid grid-cols-3 gap-4 mt-3 text-sm">
 <div class="text-center p-3 rounded-lg bg-white/5 border border-white/10">
 
 **Best Classical (SOR 1.3)**
-<br><span class="font-mono text-xs">Final L2: 3.60 × 10⁻⁶</span>
-<br><span class="font-mono text-xs">AUC: 0.395</span>
+<br><span class="font-mono text-xs">Final L2: 3.41 × 10⁻⁶</span>
+<br><span class="font-mono text-xs">AUC: 0.371</span>
 
 </div>
-<div class="text-center p-3 rounded-lg bg-white/5 border border-cyan-400/40">
+<div class="text-center p-3 rounded-lg bg-white/5 border border-red-400/40">
 
-<span class="text-cyan-400">**Greedy + Unrolled FNO**</span>
-<br><span class="font-mono text-xs">Final L2: 5.70 × 10⁻⁸</span>
-<br><span class="font-mono text-xs text-cyan-400">AUC: 9.58 × 10⁻⁴ — 412× lower</span>
+<span class="text-red-400">**LSTM Router (learned)**</span>
+<br><span class="font-mono text-xs">Final L2: 8.99 × 10⁻⁶</span>
+<br><span class="font-mono text-xs text-red-400">AUC: 0.052 — 7.1× lower</span>
+
+</div>
+<div class="text-center p-3 rounded-lg bg-white/5 border border-emerald-400/40">
+
+<span class="text-emerald-400">**Oracle Greedy**</span>
+<br><span class="font-mono text-xs">Final L2: 5.22 × 10⁻⁸</span>
+<br><span class="font-mono text-xs text-emerald-400">AUC: 8.77 × 10⁻⁴ — 423× lower</span>
 
 </div>
 </div>
@@ -249,7 +301,7 @@ class: text-center
 - Highly adaptive per-sample routing
 - **SOR(1.6)** dominates (~64%), **SOR(1.3)** ~27%, **SOR(1.0)** ~8%
 - FNO used sparingly (~0.5%) for targeted corrections
-- AUC: **8.8 × 10⁻⁴**
+- AUC: **8.77 × 10⁻⁴** — 423× better than best classical
 
 </div>
 <div class="opacity-80">
@@ -257,7 +309,7 @@ class: text-center
 **Learned LSTM Router** — trained to imitate:
 - Captures SOR(1.3) dominance (~57%) and per-sample adaptation
 - Uses FNO at matching rate (0.5%) to the oracle
-- AUC: **0.052** — 7.6× better than best classical, but still 59× gap to oracle
+- AUC: **0.052** — 7.1× better than best classical, still 59× gap to oracle
 
 </div>
 </div>
@@ -268,16 +320,23 @@ class: text-center
 
 <div class="mt-4">
 
-| | **Best Classical (SOR 1.3)** | **Greedy + Unrolled FNO** | **Improvement** |
+| | **Best Classical (SOR 1.3)** | **LSTM Router (learned)** | **Oracle Greedy** |
 |---|---|---|---|
-| **Final L2 Error** | 3.60 × 10⁻⁶ | **5.70 × 10⁻⁸** | 63× lower |
-| **AUC** | 0.395 | **9.58 × 10⁻⁴** | 412× lower |
+| **Final L2 Error** | 3.41 × 10⁻⁶ | 8.99 × 10⁻⁶ | **5.22 × 10⁻⁸** (65×↓) |
+| **AUC** | 0.371 | **0.052** (7.1×↓) | **8.77 × 10⁻⁴** (423×↓) |
+| **FNO usage** | — | 0.46% | 0.46% |
 
 </div>
 
-<div class="mt-5 pl-4 border-l-2 border-cyan-400 opacity-80 text-sm">
+<div class="mt-4 pl-4 border-l-2 border-emerald-400 opacity-80 text-sm">
 
-**Greedy routing** with 3 SOR variants + an unrolled FNO achieves **412× lower AUC** than the best single classical solver on the 2D Poisson equation. The FNO is trained through unrolled trajectories so it learns to correct the residuals that *actually arise* mid-solve — not random i.i.d. residuals.
+**Oracle greedy** routing with 3 SOR variants + an unrolled FNO achieves **423× lower AUC** than the best classical solver — establishing the ceiling for adaptive routing on 2D Poisson.
+
+</div>
+
+<div class="mt-3 pl-4 border-l-2 border-cyan-400 opacity-80 text-sm">
+
+The **learned LSTM router** already achieves **7.1× lower AUC** without access to the true solution. The 59× gap to the oracle suggests significant room for improving the learned policy.
 
 </div>
 
