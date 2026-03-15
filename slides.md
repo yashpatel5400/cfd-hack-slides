@@ -237,12 +237,10 @@ Each SOR variant has a different spectral damping profile:
 
 # The Routing Loop
 
-<div class="mt-2 flex justify-center">
-<div class="relative" style="width: 780px; height: 400px;">
+<div class="flex justify-center">
+<div class="relative" style="width: 780px; height: 310px;">
 
-<!-- Central loop arc -->
-<svg viewBox="0 0 780 400" style="position:absolute;inset:0;width:100%;height:100%">
-  <!-- Big curved return arrow from right back to left -->
+<svg viewBox="0 0 780 310" style="position:absolute;inset:0;width:100%;height:100%">
   <defs>
     <marker id="arrowC" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
       <path d="M0,0 L8,4 L0,8 Z" fill="#22d3ee" opacity="0.4"/>
@@ -254,85 +252,74 @@ Each SOR variant has a different spectral damping profile:
       <path d="M0,0 L8,4 L0,8 Z" fill="#4ade80" opacity="0.7"/>
     </marker>
   </defs>
-  <!-- Forward arrows between states -->
-  <line x1="118" y1="140" x2="222" y2="140" stroke="#fff" stroke-width="1.5" opacity="0.3" marker-end="url(#arrowW)"/>
-  <line x1="348" y1="140" x2="452" y2="140" stroke="#fff" stroke-width="1.5" opacity="0.3" marker-end="url(#arrowW)"/>
-  <line x1="578" y1="140" x2="662" y2="140" stroke="#fff" stroke-width="1.5" opacity="0.15" stroke-dasharray="6,4" marker-end="url(#arrowW)"/>
-  <!-- Return arc: u^(t+1) feeds back -->
-  <path d="M 580,160 Q 620,320 390,340 Q 160,360 100,170" fill="none" stroke="#22d3ee" stroke-width="1.5" opacity="0.25" stroke-dasharray="6,4" marker-end="url(#arrowC)"/>
-  <!-- Training gradient arrow -->
-  <path d="M 390,290 L 390,230" stroke="#4ade80" stroke-width="1.5" opacity="0.5" marker-end="url(#arrowG)"/>
+  <line x1="118" y1="105" x2="222" y2="105" stroke="#fff" stroke-width="1.5" opacity="0.3" marker-end="url(#arrowW)"/>
+  <line x1="348" y1="105" x2="452" y2="105" stroke="#fff" stroke-width="1.5" opacity="0.3" marker-end="url(#arrowW)"/>
+  <line x1="578" y1="105" x2="662" y2="105" stroke="#fff" stroke-width="1.5" opacity="0.15" stroke-dasharray="6,4" marker-end="url(#arrowW)"/>
+  <path d="M 580,125 Q 620,250 390,265 Q 160,280 100,135" fill="none" stroke="#22d3ee" stroke-width="1.5" opacity="0.25" stroke-dasharray="6,4" marker-end="url(#arrowC)"/>
+  <path d="M 390,220 L 390,170" stroke="#4ade80" stroke-width="1.5" opacity="0.5" marker-end="url(#arrowG)"/>
 </svg>
 
-<!-- State: u^(t) -->
-<div class="absolute flex flex-col items-center" style="left: 40px; top: 110px;">
+<div class="absolute flex flex-col items-center" style="left: 40px; top: 76px;">
   <div class="px-4 py-2 rounded-lg bg-white/8 border border-white/15 text-center">
     <div class="font-mono text-base text-white">u<sup>(t)</sup></div>
     <div class="text-[10px] opacity-40 mt-1">current solution</div>
   </div>
 </div>
 
-<!-- Decision node -->
-<div class="absolute flex flex-col items-center" style="left: 215px; top: 82px;">
+<div class="absolute flex flex-col items-center" style="left: 215px; top: 50px;">
   <div class="text-[10px] tracking-widest uppercase opacity-30 mb-1">router picks k*</div>
   <div class="relative">
-    <div class="w-28 h-28 rounded-xl bg-white/5 border border-cyan-400/30 flex items-center justify-center">
+    <div class="w-28 h-24 rounded-xl bg-white/5 border border-cyan-400/30 flex items-center justify-center">
       <div class="text-center">
         <div class="text-[10px] tracking-widest uppercase text-cyan-400 opacity-70">action</div>
         <div class="text-xs mt-1 font-mono opacity-80">argmin<sub>k</sub> err</div>
       </div>
     </div>
-    <!-- Solver branches -->
     <div class="absolute text-[9px] font-mono" style="right: -80px; top: -4px;">
       <div class="px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-400/20">SOR(1.0)</div>
     </div>
-    <div class="absolute text-[9px] font-mono" style="right: -80px; top: 22px;">
+    <div class="absolute text-[9px] font-mono" style="right: -80px; top: 20px;">
       <div class="px-2 py-0.5 rounded bg-orange-500/15 text-orange-300 border border-orange-400/20">SOR(1.3)</div>
     </div>
-    <div class="absolute text-[9px] font-mono" style="right: -80px; top: 48px;">
+    <div class="absolute text-[9px] font-mono" style="right: -80px; top: 44px;">
       <div class="px-2 py-0.5 rounded bg-red-500/15 text-red-300 border border-red-400/20">SOR(1.6)</div>
     </div>
-    <div class="absolute text-[9px] font-mono" style="right: -80px; top: 76px;">
+    <div class="absolute text-[9px] font-mono" style="right: -80px; top: 68px;">
       <div class="px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-300 border border-cyan-400/30">FNO ✦</div>
     </div>
   </div>
 </div>
 
-<!-- State: u^(t+1) -->
-<div class="absolute flex flex-col items-center" style="left: 460px; top: 110px;">
+<div class="absolute flex flex-col items-center" style="left: 460px; top: 76px;">
   <div class="px-4 py-2 rounded-lg bg-white/8 border border-white/15 text-center">
     <div class="font-mono text-base text-white">u<sup>(t+1)</sup></div>
     <div class="text-[10px] opacity-40 mt-1">updated solution</div>
   </div>
 </div>
 
-<!-- Dots to indicate continuation -->
-<div class="absolute font-mono text-xl tracking-[0.4em] opacity-20" style="left: 620px; top: 128px;">···</div>
+<div class="absolute font-mono text-xl tracking-[0.4em] opacity-20" style="left: 620px; top: 93px;">···</div>
 
-<!-- Converged -->
-<div class="absolute" style="left: 670px; top: 112px;">
+<div class="absolute" style="left: 670px; top: 78px;">
   <div class="px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-400/20 text-center">
     <div class="font-mono text-sm text-emerald-400">u*</div>
     <div class="text-[10px] opacity-40 mt-0.5">converged</div>
   </div>
 </div>
 
-<!-- Training box -->
-<div class="absolute" style="left: 250px; top: 290px;">
-  <div class="px-5 py-3 rounded-lg bg-emerald-500/8 border border-emerald-400/20">
+<div class="absolute" style="left: 250px; top: 225px;">
+  <div class="px-5 py-2 rounded-lg bg-emerald-500/8 border border-emerald-400/20">
     <div class="text-[10px] tracking-widest uppercase text-emerald-400 opacity-70 mb-1">Unrolled training</div>
     <div class="text-xs opacity-70">FNO sees <span class="text-cyan-300 font-mono">real in-loop residuals</span></div>
     <div class="text-xs opacity-50 mt-0.5">∇<sub>θ</sub> Σ<sub>t</sub> ‖FNO(r<sup>(t)</sup>) − correction*‖²</div>
   </div>
 </div>
 
-<!-- Loop label -->
-<div class="absolute text-[10px] text-cyan-400 opacity-40 italic" style="left: 120px; top: 340px;">repeat until ‖r‖ &lt; ε</div>
+<div class="absolute text-[10px] text-cyan-400 opacity-40 italic" style="left: 120px; top: 270px;">repeat until ‖r‖ &lt; ε</div>
 
 </div>
 </div>
 
-<div class="grid grid-cols-2 gap-8 mt-1 text-xs opacity-70">
+<div class="grid grid-cols-2 gap-8 text-xs opacity-70">
 <div>
 
 **Inference:** At each iteration the router evaluates all K+1 candidates and picks the one minimising immediate error.
