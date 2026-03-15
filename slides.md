@@ -74,91 +74,19 @@ Accelerating the Poisson solve has **outsized practical impact** — it is the d
 
 ---
 
-# Incompressible Navier–Stokes
+# Focus: The Poisson Equation
 
-<div class="grid grid-cols-2 gap-10 mt-3">
-<div>
+<div class="mt-4">
 
-The governing equations for incompressible flow:
+<div class="text-xs tracking-widest uppercase opacity-40 mb-3">Our Test Problem</div>
 
-$$
-\frac{\partial \mathbf{u}}{\partial t} + (\mathbf{u} \cdot \nabla)\mathbf{u} = -\frac{1}{\rho}\nabla p + \nu \nabla^2 \mathbf{u} + \mathbf{f}
-$$
-
-$$
-\nabla \cdot \mathbf{u} = 0
-$$
-
-<div class="mt-2 text-sm opacity-70">
-
-**Key challenge:** velocity and pressure are coupled; pressure has no independent evolution equation.
-
-</div>
-
-</div>
-<div>
-
-<div class="text-xs tracking-widest uppercase opacity-40 mb-3">Splitting Methods</div>
-
-Projection / SIMPLE / PISO all split this into:
-
-<div class="mt-2 space-y-2 text-sm">
-<div class="flex gap-3 items-start">
-<span class="text-cyan-400 font-mono font-bold shrink-0">01</span>
-<div><strong>Momentum predictor</strong> — convection-diffusion solve for <strong>u</strong>*</div>
-</div>
-<div class="flex gap-3 items-start">
-<span class="text-cyan-400 font-mono font-bold shrink-0">02</span>
-<div><strong>Pressure Poisson solve</strong> — enforce ∇ · <strong>u</strong> = 0</div>
-</div>
-<div class="flex gap-3 items-start">
-<span class="text-cyan-400 font-mono font-bold shrink-0">03</span>
-<div><strong>Velocity correction</strong> — project onto divergence-free space</div>
-</div>
-</div>
-
-<div class="mt-3 text-sm opacity-70">
-
-The pressure Poisson solve is often the **dominant computational bottleneck**.
-
-</div>
-
-</div>
-</div>
-
----
-
-# Focus: The Pressure Poisson Equation
-
-<div class="grid grid-cols-[1fr,1.3fr] gap-8 mt-3">
-<div>
-
-<div class="text-xs tracking-widest uppercase opacity-40 mb-2">In CFD Splitting Methods</div>
-
-Projection / SIMPLE / PISO all require solving:
-
-$$\nabla^2 p^{n+1} = \frac{\rho}{\Delta t} \nabla \cdot \mathbf{u}^*$$
-
-<div class="mt-3 space-y-1 text-sm opacity-80">
-
-- **Elliptic** — globally coupled, every grid point depends on every other
-- **Solved every timestep** — often multiple times per outer iteration
-- **Dominant cost** — typically 50–80% of total CFD solve time
-
-</div>
-
-</div>
-<div>
-
-<div class="text-xs tracking-widest uppercase opacity-40 mb-2">Our Test Problem</div>
-
-<div class="rounded-lg p-4 bg-white/5 border border-cyan-400/30">
+<div class="rounded-lg p-5 bg-white/5 border border-cyan-400/30">
 
 **2D Poisson with periodic boundary conditions**
 
 $$-\nabla^2 u = f \quad \text{on } [0,1]^2$$
 
-<div class="mt-2 space-y-1 text-sm opacity-80">
+<div class="mt-3 space-y-1 text-sm opacity-80">
 
 - Grid size $N = 31$ ($961$ unknowns)
 - Forcing $f$ drawn from hierarchical Gaussian random fields
@@ -168,40 +96,11 @@ $$-\nabla^2 u = f \quad \text{on } [0,1]^2$$
 
 </div>
 
-<div class="mt-3 text-sm opacity-70">
+<div class="mt-5 text-sm opacity-70">
 
 This isolates the core challenge: **can adaptive solver routing accelerate convergence of the Poisson linear system?**
 
 </div>
-
-</div>
-</div>
-
----
-
-# Iterative Solvers: The Landscape
-
-<div class="mt-2 text-sm opacity-80">
-
-Each linear subproblem $A\mathbf{u} = \mathbf{b}$ is solved by repeated iteration:
-
-</div>
-
-<div class="mt-3">
-
-| Solver | Per-step cost | Convergence | Strengths |
-|--------|:---:|:---:|-----------|
-| Jacobi($\omega$) | $O(N^2)$ | Slow | Parallelizable, tunable damping |
-| Gauss-Seidel | $O(N^2)$ | ~2× Jacobi | Better for low-freq error |
-| SOR($\omega$) | $O(N^2)$ | Tunable | Optimal $\omega$ can be much faster |
-| Multigrid | $O(N^2)$ | $O(1)$ iters | Optimal, but complex |
-| **FNO (ours)** | $O(N^2)$ | One-shot | Large initial correction |
-
-</div>
-
-<div class="mt-4 pl-4 border-l-2 border-cyan-400 text-sm opacity-80">
-
-**Key insight:** Different solvers damp different spectral modes of the error at different rates. No single solver is optimal at every stage of convergence.
 
 </div>
 
